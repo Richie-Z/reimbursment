@@ -3,15 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ReimbursementFormResource\Pages;
-use App\Filament\Resources\ReimbursementFormResource\RelationManagers;
 use App\Models\ReimbursementForm;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
 
 class ReimbursementFormResource extends Resource
 {
@@ -23,7 +23,22 @@ class ReimbursementFormResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')
+                    ->label('Pake Duid Siapaa?')
+                    ->required(),
+                TextInput::make('title')
+                    ->label('Judul Reimburse')
+                    ->required(),
+                TextInput::make('price')
+                    ->label('Berapa Nominalnya?')
+                    ->numeric()
+                    ->required(),
+                FileUpload::make('before')
+                    ->label('Dokumentasi Before'),
+                FileUpload::make('after')
+                    ->label('Dokumentasi After'),
+                FileUpload::make('documentation')
+                    ->label('Dokumentasi'),
             ]);
     }
 
@@ -31,7 +46,22 @@ class ReimbursementFormResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('name')
+                    ->label('Duid milik')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('title')
+                    ->label('Judul Reimburse')
+                    ->sortable(),
+                TextColumn::make('price')
+                    ->label('Nominalnya?')
+                    ->sortable(),
+                TextColumn::make('before')
+                    ->label('Before'),
+                TextColumn::make('after')
+                    ->label('After'),
+                TextColumn::make('documentation')
+                    ->label('Dokumentasi'),
             ])
             ->filters([
                 //
@@ -40,16 +70,14 @@ class ReimbursementFormResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            // Define relations if needed
         ];
     }
 
