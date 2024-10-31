@@ -12,6 +12,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Toggle;
 
 class ReimbursementFormResource extends Resource
 {
@@ -26,13 +28,17 @@ class ReimbursementFormResource extends Resource
                 TextInput::make('name')
                     ->label('Pake Duid Siapaa?')
                     ->required(),
-                TextInput::make('title')
-                    ->label('Judul Reimburse')
-                    ->required(),
                 TextInput::make('price')
                     ->label('Berapa Nominalnya?')
                     ->numeric()
                     ->required(),
+                TextInput::make('title')
+                    ->label('Judul Reimburse')
+                    ->columnSpan(2)
+                    ->required(),
+                // Section::make([
+                // Toggle::make('before')
+                // ]),
                 FileUpload::make('before')
                     ->label('Dokumentasi Before'),
                 FileUpload::make('after')
