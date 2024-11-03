@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ReimbursementFormResource\Pages;
 use App\Models\ReimbursementForm;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,6 +16,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Get;
 
@@ -30,8 +32,9 @@ class ReimbursementFormResource extends Resource
             ->schema([
                 Section::make('')
                     ->schema([
-                        TextInput::make('name')
+                        Select::make('name')
                             ->label('Pake Duid Siapaa?')
+                            ->options(User::all()->pluck('name', 'id'))
                             ->required(),
                         TextInput::make('price')
                             ->label('Berapa Nominalnya?')
