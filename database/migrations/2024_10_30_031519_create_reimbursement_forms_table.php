@@ -16,9 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('title');
             $table->integer('price');
-            $table->string('before');
-            $table->string('after');
-            $table->string('documentation');
+            $table->boolean('documentation_needed')->default(false);
+            $table->string('before')->nullable();
+            $table->string('after')->nullable();
+            $table->string('documentation')->nullable();
             $table->timestamps();
         });
     }

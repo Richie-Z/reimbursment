@@ -12,8 +12,11 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Get;
 
 class ReimbursementFormResource extends Resource
 {
@@ -25,27 +28,47 @@ class ReimbursementFormResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label('Pake Duid Siapaa?')
-                    ->required(),
-                TextInput::make('price')
-                    ->label('Berapa Nominalnya?')
-                    ->numeric()
-                    ->required(),
-                TextInput::make('title')
-                    ->label('Judul Reimburse')
-                    ->columnSpan(2)
-                    ->required(),
-                // Section::make([
-                // Toggle::make('before')
-                // ]),
-                FileUpload::make('before')
-                    ->label('Dokumentasi Before'),
-                FileUpload::make('after')
-                    ->label('Dokumentasi After'),
-                FileUpload::make('documentation')
-                    ->label('Dokumentasi'),
-            ]);
+                Section::make('')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Pake Duid Siapaa?')
+                            ->required(),
+                        TextInput::make('price')
+                            ->label('Berapa Nominalnya?')
+                            ->numeric()
+                            ->required(),
+                        TextInput::make('title')
+                            ->label('Judul Reimburse')
+                            ->columnSpanFull()
+                            ->required(),
+                    ])->columnSpan(2)->columns(2),
+                Group::make()
+                    ->schema([
+                        Section::make('Perlu Before-After??')
+                            ->schema([
+                                Toggle::make('documentation_needed')
+                                    ->label('Yoi')
+                                    ->live()
+                                    ->columnSpan(1)
+                                    ->default(false),
+                                Grid::make(2)
+                                    ->schema([
+                                        FileUpload::make('before')
+                                            ->label('Dokumentasi Before')
+                                            ->hidden(fn(\Filament\Forms\Get $get) => !$get('documentation_needed'))
+                                            ->required(),
+                                        FileUpload::make('after')
+                                            ->label('Dokumentasi After')
+                                            ->hidden(fn(\Filament\Forms\Get $get) => !$get('documentation_needed'))
+                                            ->required(),
+                                    ]),
+                                FileUpload::make('documentation')
+                                    ->label('Dokumentasi')
+                                    ->hidden(fn(\Filament\Forms\Get $get) => $get('documentation_needed')),
+
+                            ])
+                    ])
+            ])->columns(['default' => 3, 'sm' => 3, 'md' => 3, 'lg' => 3]);
     }
 
     public static function table(Table $table): Table
@@ -57,7 +80,7 @@ class ReimbursementFormResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('title')
-                    ->label('Judul Reimburse')
+                    ->label('Judul')
                     ->sortable(),
                 TextColumn::make('price')
                     ->label('Nominalnya?')
