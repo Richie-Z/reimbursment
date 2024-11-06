@@ -105,21 +105,21 @@ class ReimbursementFormResource extends Resource
                                     ImageColumn::make('documentation')
                                         ->height(200)
                                         ->width(150)
-                                        ->url(fn($record) => asset('storage/app/public/' . $record->documentation))
+                                        ->url(fn($record) => asset('storage/' . $record->documentation))
                                         ->extraImgAttributes([
                                             'class' => 'rounded-full',
                                         ]),
                                     ImageColumn::make('before')
                                         ->height(100)
                                         ->width(100)
-                                        ->url(fn($record) => asset('storage/app/public/' . $record->before))
+                                        ->url(fn($record) => asset('storage/' . $record->before))
                                         ->extraImgAttributes([
                                             'class' => 'rounded-full',
                                         ]),
                                     ImageColumn::make('after')
                                         ->height(100)
                                         ->width(100)
-                                        ->url(fn($record) => asset('storage/app/public/' . $record->after))
+                                        ->url(fn($record) => asset('storage/' . $record->after))
                                         ->extraImgAttributes([
                                             'class' => 'rounded-full',
                                         ])
@@ -129,6 +129,7 @@ class ReimbursementFormResource extends Resource
                                     ->weight(FontWeight::Medium),
                                 Tables\Columns\TextColumn::make('title'),
                                 Tables\Columns\TextColumn::make('price')
+                                    ->numeric(decimalPlaces: 0)
                                     ->prefix('Rp '),
                                 Tables\Columns\TextColumn::make('date'),
                                 ToggleColumn::make('is_checked')
