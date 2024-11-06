@@ -127,7 +127,8 @@ class ReimbursementFormResource extends Resource
                             Tables\Columns\Layout\Stack::make([
                                 Tables\Columns\TextColumn::make('user.name')
                                     ->weight(FontWeight::Medium),
-                                Tables\Columns\TextColumn::make('title'),
+                                Tables\Columns\TextColumn::make('title')
+                                    ->wrap(),
                                 Tables\Columns\TextColumn::make('price')
                                     ->numeric(decimalPlaces: 0)
                                     ->prefix('Rp '),
