@@ -13,10 +13,12 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('title');
             $table->integer('price');
+            $table->date('date');
             $table->boolean('documentation_needed')->default(false);
             $table->string('before')->nullable();
             $table->string('after')->nullable();
             $table->string('documentation')->nullable();
+            $table->boolean('is_checked')->default(false);
             $table->timestamps();
         });
     }
