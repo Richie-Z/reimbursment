@@ -17,6 +17,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Hydrat\TableLayoutToggle\TableLayoutTogglePlugin;
+use Hydrat\TableLayoutToggle\Persisters;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -27,18 +29,31 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('/')
             ->login()
+            ->sidebarCollapsibleOnDesktop()
+            // ->breadcrumbs(false)
             ->colors([
                 'primary' => Color::Amber,
+            ])
+            ->plugins([
+                TableLayoutTogglePlugin::make()
+                    ->setDefaultLayout('grid')
+                    ->persistLayoutUsing(
+                        persister: Persisters\LocalStoragePersister::class,
+                    )
+                    ->shareLayoutBetweenPages(false)
+                    ->displayToggleAction()
+                    ->toggleActionHook('tables::toolbar.search.after')
+                    ->listLayoutButtonIcon('heroicon-o-list-bullet')
+                    ->gridLayoutButtonIcon('heroicon-o-grid-2x2'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                // Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
