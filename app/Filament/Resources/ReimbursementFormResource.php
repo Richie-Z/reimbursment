@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ReimbursementFormResource\Pages;
 use App\Models\ReimbursementForm;
 use App\Models\User;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -19,12 +20,19 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\ToggleColumn;
 
 class ReimbursementFormResource extends Resource
 {
     protected static ?string $model = ReimbursementForm::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $navigationGroup = 'Reimbursement';
+
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $pluralModelLabel = 'Reimburse';
 
     public static function form(Form $form): Form
     {
@@ -39,12 +47,18 @@ class ReimbursementFormResource extends Resource
                         TextInput::make('price')
                             ->label('Berapa Nominalnya?')
                             ->numeric()
+                            ->reactive()
+                            ->prefix('Rp')
+                            ->extraInputAttributes(['inputmode' => 'numeric'])
+                            ->required(),
+                        DatePicker::make('date')
+                            ->label('Kapan?')
                             ->required(),
                         TextInput::make('title')
-                            ->label('Judul Reimburse')
+                            ->label('Keperluan apa?')
                             ->columnSpanFull()
                             ->required(),
-                    ])->columnSpan(2)->columns(2),
+                    ])->columnSpan(2)->columns(3),
                 Group::make()
                     ->schema([
                         Section::make('Perlu Before-After??')
@@ -90,19 +104,22 @@ class ReimbursementFormResource extends Resource
                                 ->schema([
                                     ImageColumn::make('documentation')
                                         ->height(200)
-                                        ->width(200)
+                                        ->width(150)
+                                        ->url(fn($record) => asset('storage/app/public/' . $record->documentation))
                                         ->extraImgAttributes([
                                             'class' => 'rounded-full',
                                         ]),
                                     ImageColumn::make('before')
                                         ->height(100)
                                         ->width(100)
+                                        ->url(fn($record) => asset('storage/app/public/' . $record->before))
                                         ->extraImgAttributes([
                                             'class' => 'rounded-full',
                                         ]),
                                     ImageColumn::make('after')
                                         ->height(100)
                                         ->width(100)
+                                        ->url(fn($record) => asset('storage/app/public/' . $record->after))
                                         ->extraImgAttributes([
                                             'class' => 'rounded-full',
                                         ])
@@ -112,7 +129,17 @@ class ReimbursementFormResource extends Resource
                                     ->weight(FontWeight::Medium),
                                 Tables\Columns\TextColumn::make('title'),
                                 Tables\Columns\TextColumn::make('price')
-                                    ->icon('heroicon-s-currency-euro'),
+                                    ->prefix('Rp '),
+                                Tables\Columns\TextColumn::make('date'),
+                                ToggleColumn::make('is_checked')
+                                    ->label('Paid')
+                                    ->onIcon('heroicon-o-check')
+                                    ->offIcon('heroicon-o-x-mark')
+                                    ->action(function ($record, $state) {
+                                        $record->update(['is_paid' => $state]);
+                                    })
+                                    ->sortable()
+                                    ->toggleable(),
                             ])->extraAttributes(['class' => 'space-y-2'])
                                 ->grow(),
                         ])
@@ -123,7 +150,7 @@ class ReimbursementFormResource extends Resource
                 'xl' => 3,
             ])
             ->recordUrl(false)
-            ->paginationPageOptions([9, 18, 27])
+            ->paginationPageOptions([10, 20])
             // TextColumn::make('user.name')
             //     ->label('Duid milik')
             //     ->sortable()
