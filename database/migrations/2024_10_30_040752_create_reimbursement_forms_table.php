@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('before')->nullable();
             $table->string('after')->nullable();
             $table->string('documentation')->nullable();
-            $table->boolean('is_checked')->default(false);
+            $table->boolean('is_paid')->default(false);
             $table->timestamps();
         });
     }
