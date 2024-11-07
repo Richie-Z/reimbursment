@@ -13,7 +13,6 @@ use Filament\Forms\Components\Split;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
@@ -22,8 +21,6 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
-use Hydrat\TableLayoutToggle\Concerns\HasToggleableTable;
-use Hydrat\TableLayoutToggle\Facades\TableLayoutToggle;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -143,10 +140,12 @@ class ReimbursementFormResource extends Resource
                         ->icon('heroicon-m-arrow-down-tray')
                         ->openUrlInNewTab()
                         ->deselectRecordsAfterCompletion()
-                        ->action(function (Collection $records) {
-                            return response()->streamDownload(function () use ($records) {
+                        ->action(function (Collection $records, $livewire) {
+                            $hiddenCols = collect($livewire->toggledTableColumns)
+                                ->filter(fn($val) => is_array($val) ? collect($val)->every(fn($arrVal) => !$arrVal) : !$val)->keys()->toArray();
+                            return response()->streamDownload(function () use ($records, $hiddenCols) {
                                 echo Pdf::loadHTML(
-                                    Blade::render('pdf', ['records' => $records])
+                                    Blade::render('pdf', ['records' => $records, 'hiddenCols' => $hiddenCols])
                                 )->stream();
                             }, 'Reimburse.pdf');
                         }),
@@ -154,7 +153,33 @@ class ReimbursementFormResource extends Resource
             ]);
     }
 
-    public static function getListTableLayout()
+    public static function getListTableLayout(): array
+    {
+        return [...static::getImageCols(), ...static::getTextCols()];
+    }
+
+    public static function getGridTableLayout(): array
+    {
+        return [
+            Tables\Columns\Layout\Grid::make()
+                ->columns(1)
+                ->schema([
+                    Tables\Columns\Layout\Split::make([
+                        Tables\Columns\Layout\Grid::make()
+                            ->columns(1)
+                            ->schema([
+                                ...static::getImageCols(),
+                            ])->grow(false),
+                        Tables\Columns\Layout\Stack::make([
+                            ...static::getTextCols(),
+                        ])->extraAttributes(['class' => 'space-y-2'])
+                            ->grow(),
+                    ])
+                ])
+        ];
+    }
+
+    public static function getImageCols(): array
     {
         return [
             ImageColumn::make('documentation')
@@ -178,6 +203,12 @@ class ReimbursementFormResource extends Resource
                 ->extraImgAttributes([
                     'class' => 'rounded-sm',
                 ]),
+        ];
+    }
+
+    public static function getTextCols(): array
+    {
+        return [
             Tables\Columns\TextColumn::make('user.name')
                 ->weight(FontWeight::Medium),
             Tables\Columns\TextColumn::make('title')
@@ -198,65 +229,6 @@ class ReimbursementFormResource extends Resource
                 ->toggleable(),
         ];
     }
-
-    public static function getGridTableLayout()
-    {
-        return [
-            Tables\Columns\Layout\Grid::make()
-                ->columns(1)
-                ->schema([
-                    Tables\Columns\Layout\Split::make([
-                        Tables\Columns\Layout\Grid::make()
-                            ->columns(1)
-                            ->schema([
-                                ImageColumn::make('documentation')
-                                    ->height(200)
-                                    ->width(150)
-                                    ->disk('public')
-                                    ->extraImgAttributes([
-                                        'class' => 'rounded-sm',
-                                    ]),
-                                ImageColumn::make('before')
-                                    ->height(100)
-                                    ->width(100)
-                                    ->disk('public')
-                                    ->extraImgAttributes([
-                                        'class' => 'rounded-sm',
-                                    ]),
-                                ImageColumn::make('after')
-                                    ->height(100)
-                                    ->width(100)
-                                    ->disk('public')
-                                    ->extraImgAttributes([
-                                        'class' => 'rounded-sm',
-                                    ])
-                            ])->grow(false),
-                        Tables\Columns\Layout\Stack::make([
-                            Tables\Columns\TextColumn::make('user.name')
-                                ->weight(FontWeight::Medium),
-                            Tables\Columns\TextColumn::make('title')
-                                ->label('Keperluan')
-                                ->wrap(),
-                            Tables\Columns\TextColumn::make('price')
-                                ->numeric(decimalPlaces: 0)
-                                ->prefix('Rp '),
-                            Tables\Columns\TextColumn::make('date'),
-                            ToggleColumn::make('is_paid')
-                                ->label('Paid')
-                                ->onIcon('heroicon-o-check')
-                                ->offIcon('heroicon-o-x-mark')
-                                ->action(function ($record, $state) {
-                                    $record->update(['is_paid' => $state]);
-                                })
-                                ->sortable()
-                                ->toggleable(),
-                        ])->extraAttributes(['class' => 'space-y-2'])
-                            ->grow(),
-                    ])
-                ])
-        ];
-    }
-
     public static function getRelations(): array
     {
         return [
