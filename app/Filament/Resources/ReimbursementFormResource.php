@@ -9,7 +9,6 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
@@ -21,7 +20,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\ToggleColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Support\Collection;
@@ -33,11 +31,8 @@ class ReimbursementFormResource extends Resource
     protected static ?string $model = ReimbursementForm::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
     protected static ?string $navigationGroup = 'Reimbursement';
-
     protected static ?int $navigationSort = 2;
-
     protected static ?string $pluralModelLabel = 'Reimburse';
 
     public static function form(Form $form): Form
@@ -159,29 +154,6 @@ class ReimbursementFormResource extends Resource
             ])
             ->recordUrl(false)
             ->paginationPageOptions([10, 20, 30, 40, 50])
-            // TextColumn::make('user.name')
-            //     ->label('Duid milik')
-            //     ->sortable()
-            //     ->searchable(),
-            // TextColumn::make('title')
-            //     ->label('Judul')
-            //     ->sortable(),
-            // TextColumn::make('price')
-            //     ->label('Nominalnya?')
-            //     ->sortable(),
-            // ImageColumn::make('before')
-            //     ->square()
-            //     ->size(50)
-            //     ->label(''),
-            // ImageColumn::make('after')
-            //     ->square()
-            //     ->size(50)
-            //     ->label(''),
-            // ImageColumn::make('documentation')
-            //     ->square()
-            //     ->size(70)
-            //     ->label(''),
-            // ])
             ->filters([
                 TernaryFilter::make('is_paid')->label('Pembayaran')->indicator('Pembayaran'),
                 SelectFilter::make('user_id')->label('User')->options(user::all()->pluck('name', 'id'))
