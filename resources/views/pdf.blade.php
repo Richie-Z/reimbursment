@@ -2,22 +2,29 @@
     <table width="100%" style="border-collapse: collapse; margin-bottom: 30px; font-family: Arial, sans-serif;">
         <tr>
             <!-- Image Section -->
-            <td style="border: 1px solid #ddd; padding: 10px; width: 50%; vertical-align: top; background-color: #f9f9f9;">
+            <td
+                style="border: 1px solid #ddd; padding: 10px; width: 50%; vertical-align: top; background-color: #f9f9f9;">
                 @if ($record->before && $record->after)
-                    <div style="text-align: center; margin-bottom: 10px;">
+                    <div
+                        style="text-align: center; margin-bottom: 10px; width: auto; max-width: 100%; margin-left: auto; margin-right: auto;">
                         <!-- 'Before' Image -->
-                        <img src="{{ storage_path('app/public/' . $record->before) }}" alt="Before" width="100%" style="max-height: 150px; border-radius: 8px; margin-bottom: 5px;">
+                        <img src="{{ storage_path('app/public/' . $record->before) }}" alt="Before"
+                            style="max-width: {{ getimagesize(storage_path('app/public/' . $record->before))[0] > getimagesize(storage_path('app/public/' . $record->before))[1] ? '80%' : '50%' }}; height: auto; border-radius: 8px; margin-bottom: 5px;">
                         <p style="font-size: 12px; color: #555;">Before</p>
                     </div>
-                    <div style="text-align: center;">
+                    <div
+                        style="text-align: center; margin-bottom: 10px; width: auto; max-width: 100%; margin-left: auto; margin-right: auto;">
                         <!-- 'After' Image -->
-                        <img src="{{ storage_path('app/public/' . $record->after) }}" alt="After" width="100%" style="max-height: 150px; border-radius: 8px; margin-bottom: 0px;">
+                        <img src="{{ storage_path('app/public/' . $record->after) }}" alt="After"
+                            style="max-width: {{ getimagesize(storage_path('app/public/' . $record->after))[0] > getimagesize(storage_path('app/public/' . $record->after))[1] ? '80%' : '50%' }}; height: auto; border-radius: 8px; margin-bottom: 0px;">
                         <p style="font-size: 12px; color: #555;">After</p>
                     </div>
                 @else
-                    <div style="text-align: center;">
+                    <div
+                        style="text-align: center; margin-bottom: 10px; width: auto; max-width: 100%; margin-left: auto; margin-right: auto;">
                         <!-- Documentation Image -->
-                        <img src="{{ storage_path('app/public/' . $record->documentation) }}" alt="Documentation" width="100%" style="max-height: 150px; border-radius: 8px; margin-bottom: 5px;">
+                        <img src="{{ storage_path('app/public/' . $record->documentation) }}" alt="Documentation"
+                            style="max-width: {{ getimagesize(storage_path('app/public/' . $record->documentation))[0] > getimagesize(storage_path('app/public/' . $record->documentation))[1] ? '80%' : '50%' }}; height: auto; border-radius: 8px; margin-bottom: 5px;">
                     </div>
                 @endif
             </td>
@@ -30,7 +37,8 @@
                 </div>
                 <div style="margin-bottom: 10px;">
                     <strong style="font-size: 14px; color: #333;">Date:</strong>
-                    <span style="font-size: 14px; color: #666;">{{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}</span>
+                    <span
+                        style="font-size: 14px; color: #666;">{{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}</span>
                 </div>
                 <div style="margin-bottom: 10px;">
                     <strong style="font-size: 14px; color: #333;">Title:</strong>
@@ -38,7 +46,8 @@
                 </div>
                 <div style="margin-bottom: 10px;">
                     <strong style="font-size: 14px; color: #333;">Price:</strong>
-                    <span style="font-size: 14px; color: #666;">Rp {{ number_format($record->price, 0, ',', '.') }}</span>
+                    <span style="font-size: 14px; color: #666;">Rp
+                        {{ number_format($record->price, 0, ',', '.') }}</span>
                 </div>
                 <div style="margin-bottom: 10px;">
                     <strong style="font-size: 14px; color: #333;">Status:</strong>
@@ -53,4 +62,3 @@
     <!-- Divider Between Records -->
     <hr style="border: none; border-top: 1px solid #ddd; margin: 25px 0;">
 @endforeach
-
