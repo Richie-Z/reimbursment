@@ -21,6 +21,12 @@ use Filament\Forms\Components\Toggle;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Blade;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReimbursementFormResource extends Resource
 {
@@ -133,7 +139,7 @@ class ReimbursementFormResource extends Resource
                                     ->numeric(decimalPlaces: 0)
                                     ->prefix('Rp '),
                                 Tables\Columns\TextColumn::make('date'),
-                                ToggleColumn::make('is_checked')
+                                ToggleColumn::make('is_paid')
                                     ->label('Paid')
                                     ->onIcon('heroicon-o-check')
                                     ->offIcon('heroicon-o-x-mark')
@@ -152,7 +158,7 @@ class ReimbursementFormResource extends Resource
                 'xl' => 3,
             ])
             ->recordUrl(false)
-            ->paginationPageOptions([10, 20])
+            ->paginationPageOptions([10, 20, 30, 40, 50])
             // TextColumn::make('user.name')
             //     ->label('Duid milik')
             //     ->sortable()
@@ -177,13 +183,33 @@ class ReimbursementFormResource extends Resource
             //     ->label(''),
             // ])
             ->filters([
-                //
+                TernaryFilter::make('is_paid')->label('Pembayaran')->indicator('Pembayaran'),
+                SelectFilter::make('user_id')->label('User')->options(user::all()->pluck('name', 'id'))
+                    ->indicator('User'),
+                // Filter::make('date')->label('Kapan?')->form([
+                //     DatePicker::make('date')->label('Kapan?'),
+                // ])
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('')->icon('heroicon-s-pencil'),
+                Tables\Actions\DeleteAction::make()->label('')->icon('heroicon-o-trash'),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                // Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('Export')
+                        ->label('Export PDF')
+                        ->icon('heroicon-m-arrow-down-tray')
+                        ->openUrlInNewTab()
+                        ->deselectRecordsAfterCompletion()
+                        ->action(function (Collection $records) {
+                            return response()->streamDownload(function () use ($records) {
+                                echo Pdf::loadHTML(
+                                    Blade::render('pdf', ['records' => $records])
+                                )->stream();
+                            }, 'Reimburse.pdf');
+                        }),
+                ]),
             ]);
     }
 
