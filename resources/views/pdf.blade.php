@@ -1,3 +1,9 @@
+<div style="text-align: center; font-size: 16px; font-weight: bold; margin-top: 10px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+    <h2 style="margin: 0; padding: 0;">FORM REIMBURSEMENT</h2>
+    <p style="font-size: 14px; color: #169; margin: 0; padding: 0;">PLN ICON PLUS UNIT LAYANAN NTT</p>
+    <p style="font-size: 12px; color: #555; margin: 0; padding: 0;">Generated on: {{ \Carbon\Carbon::now('Asia/Makassar')->format('d-m-Y H:i') }}</p>
+</div>
+
 @foreach ($records as $record)
     <table width="100%" style="border-collapse: collapse; margin-bottom: 30px; font-family: Arial, sans-serif;">
         <tr>
