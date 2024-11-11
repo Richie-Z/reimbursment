@@ -71,7 +71,7 @@ class ReimbursementFormResource extends Resource
                                 ->required(),
                         ])->columns(2)->columnSpanFull(),
 
-                    Section::make('Upload Dokumenasi ')
+                    Section::make()
                         ->description('Upload Dokumentasi anda')
                         ->schema([
                             FileUpload::make('before')
