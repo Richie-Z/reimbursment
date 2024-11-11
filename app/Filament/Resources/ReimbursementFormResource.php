@@ -116,7 +116,7 @@ class ReimbursementFormResource extends Resource
             )
             ->contentGrid([
                 'md' => 1,
-                'xl' => 2,
+                'xl' => 3,
             ])
             ->recordUrl(false)
             ->paginationPageOptions([10, 20, 30, 40, 50])
@@ -131,12 +131,13 @@ class ReimbursementFormResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()->label('')->icon('heroicon-s-pencil'),
                 Tables\Actions\DeleteAction::make()->label('')->icon('heroicon-o-trash'),
+                Tables\Actions\Action::make('pdf')->label('PDF')->icon('heroicon-o-document-text')->color('success'),
             ])
             ->bulkActions([
-                // Tables\Actions\DeleteBulkAction::make(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('Export')
-                        ->label('Export PDF')
+                        ->label('Export PDF All in One')
+                        ->color('primary')
                         ->icon('heroicon-m-arrow-down-tray')
                         ->openUrlInNewTab()
                         ->deselectRecordsAfterCompletion()
@@ -147,8 +148,24 @@ class ReimbursementFormResource extends Resource
                                 echo Pdf::loadHTML(
                                     Blade::render('pdf', ['records' => $records, 'hiddenCols' => $hiddenCols])
                                 )->stream();
-                            }, 'Reimburse.pdf');
+                            }, 'Report Reimburse.pdf');
                         }),
+                    Tables\Actions\BulkAction::make('Pdf')
+                        ->label('Export PDF perSheet')
+                        ->color('success')
+                        ->icon('heroicon-m-arrow-down-tray')
+                        ->openUrlInNewTab()
+                        ->deselectRecordsAfterCompletion()
+                        ->action(function (Collection $records, $livewire) {
+                            $hiddenCols = collect($livewire->toggledTableColumns)
+                                ->filter(fn($val) => is_array($val) ? collect($val)->every(fn($arrVal) => !$arrVal) : !$val)->keys()->toArray();
+                            return response()->streamDownload(function () use ($records, $hiddenCols) {
+                                echo Pdf::loadHTML(
+                                    Blade::render('pdfPerSheet', ['records' => $records, 'hiddenCols' => $hiddenCols])
+                                )->stream();
+                            }, 'Report Reimburse.pdf');
+                        }),
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -183,6 +200,7 @@ class ReimbursementFormResource extends Resource
     {
         return [
             ImageColumn::make('documentation')
+                ->label('Dokumentasi')
                 ->height(200)
                 ->width(150)
                 ->disk('public')
@@ -190,6 +208,7 @@ class ReimbursementFormResource extends Resource
                     'class' => 'rounded-sm',
                 ]),
             ImageColumn::make('before')
+                ->label('Before')
                 ->height(100)
                 ->width(100)
                 ->disk('public')
@@ -197,6 +216,7 @@ class ReimbursementFormResource extends Resource
                     'class' => 'rounded-sm',
                 ]),
             ImageColumn::make('after')
+                ->label('After')
                 ->height(100)
                 ->width(100)
                 ->disk('public')
@@ -210,16 +230,25 @@ class ReimbursementFormResource extends Resource
     {
         return [
             Tables\Columns\TextColumn::make('user.name')
+                ->toggleable()
+                ->sortable()
                 ->weight(FontWeight::Medium),
             Tables\Columns\TextColumn::make('title')
                 ->label('Keperluan')
+                ->toggleable()
                 ->wrap(),
             Tables\Columns\TextColumn::make('price')
+                ->label('Nominal')
                 ->numeric(decimalPlaces: 0)
+                ->toggleable()
+                ->sortable()
                 ->prefix('Rp '),
-            Tables\Columns\TextColumn::make('date'),
+            Tables\Columns\TextColumn::make('date')
+                ->label('Tanggal')
+                ->sortable()
+                ->toggleable(),
             ToggleColumn::make('is_paid')
-                ->label('Paid')
+                ->label('Pembayaran')
                 ->onIcon('heroicon-o-check')
                 ->offIcon('heroicon-o-x-mark')
                 ->action(function ($record, $state) {
