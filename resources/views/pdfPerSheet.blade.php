@@ -1,11 +1,16 @@
 @foreach ($records as $record)
     <div
-        style="text-align: center; font-size: 16px; font-weight: bold; padding-bottom: 10px; border-bottom: 1px solid #ddd; margin-top: 20px;">
-        <img src="{{ public_path('images/Logo.png') }}" style="max-width:100px">
-        <h2 style="margin: 0; padding: 0;">REIMBURSEMENT REPORT</h2>
-        <p style="font-size: 14px; color: #169; margin: 0; padding: 0;">PLN ICON PLUS UNIT LAYANAN NTT</p>
-        <p style="font-size: 12px; color: #555; margin: 0; padding: 0;">Generated on:
-            {{ \Carbon\Carbon::now('Asia/Makassar')->format('d-m-Y H:i') }}</p>
+        style="font-size: 16px; font-weight: bold; padding-bottom: 10px; border-bottom: 1px solid #ddd; margin-top: 20px; width:100%">
+        <div style="width: 20%; display: inline-block">
+            <img src="{{ public_path('images/Logo.png') }}" style="max-width:100px">
+        </div>
+        <div style="width: 60%; display: inline-block; text-align:center">
+            <h2 style="margin: 0; padding: 0;">REIMBURSEMENT REPORT</h2>
+            <p style="font-size: 14px; color: #169; margin: 0; padding: 0;">PLN ICON PLUS UNIT LAYANAN NTT</p>
+            <p style="font-size: 12px; color: #555; margin: 0; padding: 0;">Generated on:
+                {{ \Carbon\Carbon::now('Asia/Makassar')->format('d-m-Y H:i') }}
+            </p>
+        </div>
     </div>
 
     <!-- Layout for Side-by-Side Content -->
