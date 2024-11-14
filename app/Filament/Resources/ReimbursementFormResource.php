@@ -246,6 +246,7 @@ class ReimbursementFormResource extends Resource
             Tables\Columns\TextColumn::make('date')
                 ->label('Tanggal')
                 ->sortable()
+                ->date(format: 'd/m/Y')
                 ->toggleable(),
             ToggleColumn::make('is_paid')
                 ->label('Pembayaran')
