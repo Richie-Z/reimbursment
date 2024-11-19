@@ -16,4 +16,9 @@ class EditReimbursementForm extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function getRedirectRoute(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\SummaryWidget;
+use App\Livewire\ReimbursementChartWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -16,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
+// use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Hydrat\TableLayoutToggle\TableLayoutTogglePlugin;
 use Hydrat\TableLayoutToggle\Persisters;
@@ -33,6 +36,9 @@ class AdminPanelProvider extends PanelProvider
             // ->breadcrumbs(false)
             ->colors([
                 'primary' => Color::Amber,
+                'danger' => '#F44336',    // Red
+                'warning' => '#FFC107',   // Yellow
+                'success' => '#8BC34A',   // Light green
             ])
             ->plugins([
                 TableLayoutTogglePlugin::make()
@@ -54,6 +60,8 @@ class AdminPanelProvider extends PanelProvider
             // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
+                SummaryWidget::class,
+                ReimbursementChartWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
