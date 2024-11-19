@@ -11,15 +11,26 @@ class SummaryWidget extends BaseWidget
     {
         return [
             Stat::make('Total Reimbursements', \App\Models\ReimbursementForm::count())
-                ->color('primary'),
+                ->description('Jumlah Pengembalian Dana')
+                ->descriptionIcon('heroicon-m-arrow-trending-up')
+                ->extraAttributes([
+                    'class' => 'custom-bg success',
+                ]),
 
-            Stat::make('Pending Approvals', \App\Models\ReimbursementForm::where('is_paid', false)
-                ->count())
-                ->color('warning'),
+            Stat::make('Pending Approvals', \App\Models\ReimbursementForm::where('is_paid', false)->count())
+                ->description('Menunggu Persetujuan')
+                ->descriptionIcon('heroicon-m-arrow-path')
+                ->extraAttributes([
+                    'class' => 'custom-bg warning',
+                ]),
 
             Stat::make('Total Paid', 'Rp ' . number_format(\App\Models\ReimbursementForm::where('is_paid', true)
                 ->sum('price'), 0, ',', '.'))
-                ->Color('success'),
+                ->description('Jumlah Dana Terbayar')
+                ->descriptionIcon('heroicon-m-currency-dollar')
+                ->extraAttributes([
+                    'class' => 'custom-bg danger',
+                ]),
         ];
     }
 }
