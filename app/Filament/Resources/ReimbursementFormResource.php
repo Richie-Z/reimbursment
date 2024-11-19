@@ -131,7 +131,22 @@ class ReimbursementFormResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()->label('')->icon('heroicon-s-pencil'),
                 Tables\Actions\DeleteAction::make()->label('')->icon('heroicon-o-trash'),
-                Tables\Actions\Action::make('pdf')->label('PDF')->icon('heroicon-o-document-text')->color('success'),
+                Tables\Actions\Action::make('pdf')
+                    ->label('PDF')
+                    ->icon('heroicon-o-document-text')
+                    ->color('success')
+                    ->action(function (ReimbursementForm $record, $livewire) {
+                        // Capture hidden columns if needed for single record PDF generation
+                        $hiddenCols = collect($livewire->toggledTableColumns)
+                            ->filter(fn($val) => is_array($val) ? collect($val)->every(fn($arrVal) => !$arrVal) : !$val)->keys()->toArray();
+
+                        // Stream single-record PDF
+                        return response()->streamDownload(function () use ($record, $hiddenCols) {
+                            echo Pdf::loadHTML(
+                                Blade::render('pdf', ['records' => collect([$record]), 'hiddenCols' => $hiddenCols])
+                            )->stream();
+                        }, 'Report_Reimburse_Single.pdf');
+                    })->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
