@@ -3,10 +3,11 @@
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
-use Filament\Actions;
+use App\Traits\Redirect;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateUser extends CreateRecord
 {
+    use Redirect;
     protected static string $resource = UserResource::class;
 }

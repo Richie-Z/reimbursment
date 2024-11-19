@@ -1,11 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Traits;
 
 trait Redirect
 {
-    protected function getRedirectRoute(): string
+    protected function getRedirectUrl(): string
     {
-        return $this->getRedirectRoute()::getUrl('index');
+        return $this->getResource()::getUrl('index');
     }
 }
