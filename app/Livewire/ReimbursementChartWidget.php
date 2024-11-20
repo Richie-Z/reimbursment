@@ -8,11 +8,17 @@ class ReimbursementChartWidget extends ChartWidget
 {
     protected static ?string $heading = 'Chart';
 
+    protected array|string|int $columnSpan = 2;
+
     protected function getData(): array
     {
         $data = \App\Models\ReimbursementForm::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->groupBy('month')
             ->pluck('count', 'month');
+        // ->between(
+        //     start: now()->startOfYear(),
+        //     end: now()->endOfYear(),
+        // );
 
         return [
             'datasets' => [
@@ -22,6 +28,16 @@ class ReimbursementChartWidget extends ChartWidget
                 ],
             ],
             'labels' => $data->keys()->map(fn($month) => date('F', mktime(0, 0, 0, $month, 1)))->toArray(),
+        ];
+    }
+
+    protected function getFilters(): ?array
+    {
+        return [
+            'today' => 'Today',
+            'week' => 'Last week',
+            'month' => 'This month',
+            'year' => 'This year',
         ];
     }
 
