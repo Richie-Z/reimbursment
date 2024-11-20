@@ -38,7 +38,7 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
                 'danger' => '#F44336',    // Red
                 'warning' => '#FFC107',   // Yellow
-                'success' => '#8BC34A',   // Light green
+                'success' => '#1AD30A',   // Light green
             ])
             ->plugins([
                 TableLayoutTogglePlugin::make()

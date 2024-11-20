@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* BUG: Tailwind CSS @apply not working? */
+.custom-bg {
+    &.success {
+        background-color: #28a745;
+        span,
+        svg {
+            color: white !important;
+        }
+    }
+    &.danger {
+        background-color: #dc3545;
+        span,
+        svg {
+            color: white !important;
+        }
+    }
+    &.warning {
+        background-color: #ffc107;
+        span,
+        svg {
+            color: #212529 !important;
+        }
+    }
+}

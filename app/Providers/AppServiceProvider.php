@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
-use App\Filament\Widgets\SummaryWidget;
-use Filament\Facades\Filament;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,8 +24,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::unguard();
 
-        // Filament::registerWidgets([
-        //     SummaryWidget::class,
-        // ]);
+        FilamentAsset::register([
+            Css::make('app-styles', 'resources/css/app.css'),
+        ]);
     }
 }

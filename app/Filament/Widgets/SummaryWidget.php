@@ -10,15 +10,21 @@ class SummaryWidget extends BaseWidget
     protected function getCards(): array
     {
         return [
-            Stat::make('Total Reimbursements', \App\Models\ReimbursementForm::count())
+            Stat::make('', \App\Models\ReimbursementForm::count())
+                ->descriptionIcon('heroicon-m-arrow-trending-up')
+                ->description('Total Reimbursement')
                 ->color('primary'),
 
-            Stat::make('Pending Approvals', \App\Models\ReimbursementForm::where('is_paid', false)
+            Stat::make('', \App\Models\ReimbursementForm::where('is_paid', false)
                 ->count())
-                ->color('warning'),
+                ->description('Pending Reimbursement')
+                ->descriptionIcon('heroicon-m-arrow-path')
+                ->color('danger'),
 
-            Stat::make('Total Paid', 'Rp ' . number_format(\App\Models\ReimbursementForm::where('is_paid', true)
+            Stat::make('', 'Rp ' . number_format(\App\Models\ReimbursementForm::where('is_paid', true)
                 ->sum('price'), 0, ',', '.'))
+                ->description('Nominal Reimburse')
+                ->descriptionIcon('heroicon-m-currency-dollar')
                 ->Color('success'),
         ];
     }
