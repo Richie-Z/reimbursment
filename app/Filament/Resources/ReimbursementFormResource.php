@@ -165,21 +165,21 @@ class ReimbursementFormResource extends Resource
                                 )->stream();
                             }, 'Report Reimburse.pdf');
                         }),
-                    Tables\Actions\BulkAction::make('Pdf')
-                        ->label('Export PDF perSheet')
-                        ->color('success')
-                        ->icon('heroicon-m-arrow-down-tray')
-                        ->openUrlInNewTab()
-                        ->deselectRecordsAfterCompletion()
-                        ->action(function (Collection $records, $livewire) {
-                            $hiddenCols = collect($livewire->toggledTableColumns)
-                                ->filter(fn($val) => is_array($val) ? collect($val)->every(fn($arrVal) => !$arrVal) : !$val)->keys()->toArray();
-                            return response()->streamDownload(function () use ($records, $hiddenCols) {
-                                echo Pdf::loadHTML(
-                                    Blade::render('pdfPerSheet', ['records' => $records, 'hiddenCols' => $hiddenCols])
-                                )->stream();
-                            }, 'Report Reimburse.pdf');
-                        }),
+                    // Tables\Actions\BulkAction::make('Pdf')
+                    //     ->label('Export PDF perSheet')
+                    //     ->color('success')
+                    //     ->icon('heroicon-m-arrow-down-tray')
+                    //     ->openUrlInNewTab()
+                    //     ->deselectRecordsAfterCompletion()
+                    //     ->action(function (Collection $records, $livewire) {
+                    //         $hiddenCols = collect($livewire->toggledTableColumns)
+                    //             ->filter(fn($val) => is_array($val) ? collect($val)->every(fn($arrVal) => !$arrVal) : !$val)->keys()->toArray();
+                    //         return response()->streamDownload(function () use ($records, $hiddenCols) {
+                    //             echo Pdf::loadHTML(
+                    //                 Blade::render('pdfPerSheet', ['records' => $records, 'hiddenCols' => $hiddenCols])
+                    //             )->stream();
+                    //         }, 'Report Reimburse.pdf');
+                    //     }),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
