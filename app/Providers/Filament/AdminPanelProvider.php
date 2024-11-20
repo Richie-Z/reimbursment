@@ -11,14 +11,12 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
-// use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Hydrat\TableLayoutToggle\TableLayoutTogglePlugin;
 use Hydrat\TableLayoutToggle\Persisters;
@@ -38,7 +36,7 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
                 'danger' => '#F44336',    // Red
                 'warning' => '#FFC107',   // Yellow
-                'success' => '#8BC34A',   // Light green
+                'success' => '#1AD30A',   // Light green
             ])
             ->plugins([
                 TableLayoutTogglePlugin::make()
@@ -59,7 +57,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+                // Widgets\AccountWidget::class,
                 SummaryWidget::class,
                 ReimbursementChartWidget::class,
             ])
