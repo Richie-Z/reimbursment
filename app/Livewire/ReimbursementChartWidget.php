@@ -6,9 +6,9 @@ use Filament\Widgets\ChartWidget;
 
 class ReimbursementChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Chart';
+    protected static ?string $heading = 'Reimbursement Accumulation';
 
-    protected array|string|int $columnSpan = 2;
+    // protected array|string|int $columnSpan = 2;
 
     protected function getData(): array
     {
@@ -35,9 +35,10 @@ class ReimbursementChartWidget extends ChartWidget
     {
         return [
             'today' => 'Today',
-            'week' => 'Last week',
-            'month' => 'This month',
-            'year' => 'This year',
+            'week' => 'Week',
+            'month' => 'Month',
+            'year' => 'Year',
+            'custom' => 'Custom Range',
         ];
     }
 
