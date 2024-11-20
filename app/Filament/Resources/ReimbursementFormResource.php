@@ -48,6 +48,7 @@ class ReimbursementFormResource extends Resource
                                 ->required(),
                             DatePicker::make('date')
                                 ->label('Kapan?')
+                                ->maxDate(now())
                                 ->required(),
                             TextInput::make('price')
                                 ->label('Berapa Nominalnya?')
