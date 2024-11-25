@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Widgets\SummaryWidget;
+use App\Livewire\ReimbursementAmountWidget;
 use App\Livewire\ReimbursementChartWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -30,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('/')
             ->login()
+            ->databaseNotifications()
             ->sidebarCollapsibleOnDesktop()
             // ->breadcrumbs(false)
             ->colors([
@@ -60,6 +62,7 @@ class AdminPanelProvider extends PanelProvider
                 // Widgets\AccountWidget::class,
                 SummaryWidget::class,
                 ReimbursementChartWidget::class,
+                ReimbursementAmountWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

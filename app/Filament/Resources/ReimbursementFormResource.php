@@ -24,6 +24,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Tables\Filters\Filter;
 
 class ReimbursementFormResource extends Resource
 {
@@ -38,67 +39,75 @@ class ReimbursementFormResource extends Resource
     {
         return $form
             ->schema([
-                Section::make()->schema([
-                    Toggle::make('documentation_needed')
-                        ->label('Dokumentasi perlu After & Before')
-                        ->live()
-                        ->columnSpan(1)
-                        ->hintIcon('heroicon-o-information-circle')
-                        ->hintIconTooltip('Jika iya, maka wajib upload dokumentasi')
-                        ->default(false),
-                ]),
                 Split::make([
                     Section::make('')
                         ->schema([
                             Select::make('user_id')
                                 ->label('Pake Duid Siapaa?')
-                                ->options(User::all()->pluck('name', 'id'))
+                                ->options([auth()->id() => auth()->user()->name])
                                 ->required(),
                             DatePicker::make('date')
                                 ->label('Kapan?')
+                                ->maxDate(now())
                                 ->required(),
                             TextInput::make('price')
                                 ->label('Berapa Nominalnya?')
-                                ->numeric()
                                 ->reactive()
                                 ->prefix('Rp')
-                                ->extraInputAttributes(['inputmode' => 'numeric'])
+                                ->extraInputAttributes([
+                                    'inputmode' => 'numeric',
+                                    'pattern' => '^[0-9]+$',
+                                    'oninput' => "this.value = this.value.replace(/[^0-9]/g, '');"
+                                ])
                                 ->required()
+                                ->rule('regex:/^[0-9]+$/')
+                                ->placeholder('Masukkan angka saja')
                                 ->columnSpanFull(),
                             TextInput::make('title')
                                 ->label('Keperluan apa?')
                                 ->columnSpanFull()
+                                ->placeholder('Tujuan Pengeluaran')
                                 ->required(),
                         ])->columns(2)->columnSpanFull(),
 
-                    Section::make()
-                        ->description('Upload Dokumentasi anda')
-                        ->schema([
-                            FileUpload::make('before')
-                                ->label('Dokumentasi Before')
-                                ->hidden(fn(\Filament\Forms\Get $get) => !$get('documentation_needed'))
-                                ->maxSize(2048)
-                                ->image()
-                                ->disk('public')
-                                ->directory('doc_before')
-                                ->required(),
-                            FileUpload::make('after')
-                                ->label('Dokumentasi After')
-                                ->hidden(fn(\Filament\Forms\Get $get) => !$get('documentation_needed'))
-                                ->image()
-                                ->disk('public')
-                                ->directory('doc_after')
-                                ->maxSize(2048)
-                                ->required(),
-                            FileUpload::make('documentation')
-                                ->label('Dokumentasi')
-                                ->hidden(fn(\Filament\Forms\Get $get) => $get('documentation_needed'))
-                                ->image()
-                                ->disk('public')
-                                ->directory('doc')
-                                ->maxSize(2048)
-                                ->required(),
-                        ])
+                    Section::make()->schema([
+                        Toggle::make('documentation_needed')
+                            ->label('Dokumentasi perlu After & Before')
+                            ->live()
+                            ->columnSpan(1)
+                            ->hintIcon('heroicon-o-information-circle')
+                            ->hintIconTooltip('Jika iya, maka wajib upload dokumentasi')
+                            ->default(false),
+                        Section::make()
+                            ->schema([
+                                FileUpload::make('before')
+                                    ->label('Dokumentasi Before')
+                                    ->hidden(fn(\Filament\Forms\Get $get) => !$get('documentation_needed'))
+                                    ->maxSize(2048)
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('doc_before')
+                                    ->required(),
+                                FileUpload::make('after')
+                                    ->label('Dokumentasi After')
+                                    ->hidden(fn(\Filament\Forms\Get $get) => !$get('documentation_needed'))
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('doc_after')
+                                    ->maxSize(2048)
+                                    ->required(),
+                                FileUpload::make('documentation')
+                                    ->label('Dokumentasi')
+                                    ->hidden(fn(\Filament\Forms\Get $get) => $get('documentation_needed'))
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('doc')
+                                    ->maxSize(2048)
+                                    ->required(),
+                            ])
+
+                    ]),
+
                 ])->columnSpanFull(),
 
             ])->columns(['default' => 3, 'sm' => 3, 'md' => 3, 'lg' => 3]);
@@ -124,9 +133,16 @@ class ReimbursementFormResource extends Resource
                 TernaryFilter::make('is_paid')->label('Pembayaran')->indicator('Pembayaran'),
                 SelectFilter::make('user_id')->label('User')->options(User::all()->pluck('name', 'id'))
                     ->indicator('User'),
-                // Filter::make('date')->label('Kapan?')->form([
-                //     DatePicker::make('date')->label('Kapan?'),
-                // ])
+                Filter::make('date')
+                    ->label('Kapan?')
+                    ->form([
+                        DatePicker::make('date')->label('Kapan?'),
+                    ])
+                    ->query(function ($query, $data) {
+                        if ($data['date']) {
+                            $query->whereDate('date', $data['date']);
+                        }
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->label('')->icon('heroicon-s-pencil'),
@@ -136,11 +152,9 @@ class ReimbursementFormResource extends Resource
                     ->icon('heroicon-o-document-text')
                     ->color('success')
                     ->action(function (ReimbursementForm $record, $livewire) {
-                        // Capture hidden columns if needed for single record PDF generation
                         $hiddenCols = collect($livewire->toggledTableColumns)
                             ->filter(fn($val) => is_array($val) ? collect($val)->every(fn($arrVal) => !$arrVal) : !$val)->keys()->toArray();
 
-                        // Stream single-record PDF
                         return response()->streamDownload(function () use ($record, $hiddenCols) {
                             echo Pdf::loadHTML(
                                 Blade::render('pdf', ['records' => collect([$record]), 'hiddenCols' => $hiddenCols])
@@ -279,6 +293,16 @@ class ReimbursementFormResource extends Resource
         return [
             // Define relations if needed
         ];
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->id === $record->user_id;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->id === $record->user_id;
     }
 
     public static function getPages(): array

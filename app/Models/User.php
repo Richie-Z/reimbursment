@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Builder
@@ -36,4 +37,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(ReimbursementForm::class);
     }
+
+    use Notifiable;
 }
