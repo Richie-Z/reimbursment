@@ -73,16 +73,16 @@ class UserResource extends Resource
         ];
     }
 
-    // public static function canAccess(): bool
-    // {
-    // $user = auth()->user();
-    //
-    // if ($user && $user->role && $user->role->Role === 'Super Admin') {
-    //     return true;
-    // }
-    //
-    // return false;
-    // }
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+
+        if ($user && $user->role && $user->role->Role === 'Super Admin') {
+            return true;
+        }
+
+        return false;
+    }
 
     public static function canEdit($record): bool
     {

@@ -21,9 +21,11 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Facades\Filament;
 use Filament\Tables\Filters\Filter;
 
 class ReimbursementFormResource extends Resource
@@ -34,6 +36,15 @@ class ReimbursementFormResource extends Resource
     protected static ?string $navigationGroup = 'Reimbursement';
     protected static ?int $navigationSort = 2;
     protected static ?string $pluralModelLabel = 'Reimburse';
+
+    public static function getEloquentQuery(): Builder
+    {
+        if (auth()->user()->role->name !== 'Super Admin') {
+            return parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+        }
+
+        return parent::getEloquentQuery();
+    }
 
     public static function form(Form $form): Form
     {
