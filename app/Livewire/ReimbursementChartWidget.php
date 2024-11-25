@@ -2,43 +2,72 @@
 
 namespace App\Livewire;
 
+use App\Models\ReimbursementForm;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\DB;
 
 class ReimbursementChartWidget extends ChartWidget
 {
     protected static ?string $heading = 'Reimbursement Accumulation';
 
-    // protected array|string|int $columnSpan = 2;
-
     protected function getData(): array
     {
-        $data = \App\Models\ReimbursementForm::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-            ->groupBy('month')
-            ->pluck('count', 'month');
-        // ->between(
-        //     start: now()->startOfYear(),
-        //     end: now()->endOfYear(),
-        // );
+        $activeFilter = $this->filter;
+
+        $grouping = [
+            'day' => [
+                'select' => 'DATE(created_at) as date, COUNT(*) as count',
+                'groupBy' => DB::raw('DATE(created_at)'),
+                'key' => 'date',
+                'label' => fn($value) => date('d M Y', strtotime($value))
+            ],
+            'week' => [
+                'select' => 'WEEK(created_at) as week, COUNT(*) as count',
+                'groupBy' => 'week',
+                'key' => 'week',
+                'label' => fn($value) => 'Week ' . $value
+            ],
+            'month' => [
+                'select' => 'MONTH(created_at) as month, COUNT(*) as count',
+                'groupBy' => 'month',
+                'key' => 'month',
+                'label' => fn($value) => date('F', mktime(0, 0, 0, $value, 1))
+            ],
+            'year' => [
+                'select' => 'YEAR(created_at) as year, COUNT(*) as count',
+                'groupBy' => 'year',
+                'key' => 'year',
+                'label' => fn($value) => $value
+            ]
+        ];
+
+        $filter = $grouping[$activeFilter] ?? $grouping['month'];
+
+        $data = ReimbursementForm::selectRaw($filter['select'])
+            ->groupBy($filter['groupBy'])
+            ->get();
+
+        $counts = $data->pluck('count')->toArray();
+        $labels = $data->pluck($filter['key'])->map($filter['label'])->toArray();
 
         return [
             'datasets' => [
                 [
                     'label' => 'Reimbursements',
-                    'data' => $data->values()->toArray(),
+                    'data' => $counts,
                 ],
             ],
-            'labels' => $data->keys()->map(fn($month) => date('F', mktime(0, 0, 0, $month, 1)))->toArray(),
+            'labels' => $labels
         ];
     }
 
     protected function getFilters(): ?array
     {
         return [
-            'today' => 'Today',
-            'week' => 'Week',
             'month' => 'Month',
+            'day' => 'Day',
+            'week' => 'Week',
             'year' => 'Year',
-            'custom' => 'Custom Range',
         ];
     }
 
