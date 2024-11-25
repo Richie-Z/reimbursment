@@ -16,25 +16,25 @@ class ReimbursementChartWidget extends ChartWidget
 
         $grouping = [
             'day' => [
-                'select' => 'DATE(created_at) as date, COUNT(*) as count',
-                'groupBy' => DB::raw('DATE(created_at)'),
+                'select' => 'DATE(date) as date, COUNT(*) as count',
+                'groupBy' => DB::raw('DATE(date)'),
                 'key' => 'date',
                 'label' => fn($value) => date('d M Y', strtotime($value))
             ],
             'week' => [
-                'select' => 'WEEK(created_at) as week, COUNT(*) as count',
+                'select' => 'WEEK(date) as week, COUNT(*) as count',
                 'groupBy' => 'week',
                 'key' => 'week',
                 'label' => fn($value) => 'Week ' . $value
             ],
             'month' => [
-                'select' => 'MONTH(created_at) as month, COUNT(*) as count',
+                'select' => 'MONTH(date) as month, COUNT(*) as count',
                 'groupBy' => 'month',
                 'key' => 'month',
                 'label' => fn($value) => date('F', mktime(0, 0, 0, $value, 1))
             ],
             'year' => [
-                'select' => 'YEAR(created_at) as year, COUNT(*) as count',
+                'select' => 'YEAR(date) as year, COUNT(*) as count',
                 'groupBy' => 'year',
                 'key' => 'year',
                 'label' => fn($value) => $value
