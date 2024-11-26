@@ -303,6 +303,7 @@ class ReimbursementFormResource extends Resource
                     $record->update(['is_paid' => $state]);
                 })
                 ->sortable()
+                ->hidden(!static::isSuperAdmin())
                 ->toggleable(),
         ];
     }
