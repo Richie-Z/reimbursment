@@ -31,7 +31,6 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('/')
             ->login()
-            ->databaseNotifications()
             ->sidebarCollapsibleOnDesktop()
             // ->breadcrumbs(false)
             ->colors([
@@ -77,6 +76,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->databaseNotifications();
     }
 }
