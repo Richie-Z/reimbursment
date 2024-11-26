@@ -26,17 +26,19 @@ class EditReimbursementForm extends EditRecord
     protected function afterSave(): void
     {
         $user = auth()->user();
-        Notification::make()
-            ->title('Ada Pengajuan Reimbursement Baru')
-            ->body('Ada pengajuan reimbursement baru oleh ' . $user->name)
-            ->info()
-            ->actions([
-                Action::make('Lihat')
-                    ->url(fn() => route('filament.admin.resources.reimbursement-forms.edit', $this->record))
-                    ->button()
-                    ->openUrlInNewTab()
-                    ->markAsRead(),
-            ])
-            ->sendToDatabase(User::where('role_id', 1)->get());
+        if ($user->role_id !== 1) {
+            Notification::make()
+                ->title('Ada Pengajuan Reimbursement Baru')
+                ->body('Ada pengajuan reimbursement baru oleh ' . $user->name)
+                ->info()
+                ->actions([
+                    Action::make('Lihat')
+                        ->url(fn() => route('filament.admin.resources.reimbursement-forms.edit', $this->record))
+                        ->button()
+                        ->openUrlInNewTab()
+                        ->markAsRead(),
+                ])
+                ->sendToDatabase(User::where('role_id', 1)->get());
+        }
     }
 }

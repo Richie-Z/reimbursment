@@ -37,7 +37,7 @@ class ReimbursementFormResource extends Resource
 
     public static function isSuperAdmin()
     {
-        return auth()->user()->role->name === 'Super Admin';
+        return auth()->user()->role_id === 1;
     }
 
     public static function getEloquentQuery(): Builder
@@ -58,7 +58,11 @@ class ReimbursementFormResource extends Resource
                         ->schema([
                             Select::make('user_id')
                                 ->label('Pake Duid Siapaa?')
-                                ->options([auth()->id() => auth()->user()->name])
+                                ->relationship('user', 'name', function (Builder $query) {
+                                    if (!static::isSuperAdmin()) {
+                                        $query->where('id', auth()->user()->id);
+                                    }
+                                })
                                 ->required(),
                             DatePicker::make('date')
                                 ->label('Kapan?')
