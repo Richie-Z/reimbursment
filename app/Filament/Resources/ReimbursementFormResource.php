@@ -25,25 +25,28 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Facades\Filament;
 use Filament\Tables\Filters\Filter;
 
 class ReimbursementFormResource extends Resource
 {
     protected static ?string $model = ReimbursementForm::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Reimbursement';
     protected static ?int $navigationSort = 2;
     protected static ?string $pluralModelLabel = 'Reimburse';
 
+    public static function isSuperAdmin()
+    {
+        return auth()->user()->role->name === 'Super Admin';
+    }
+
     public static function getEloquentQuery(): Builder
     {
-        if (auth()->user()->role->name !== 'Super Admin') {
-            return parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+        if (static::isSuperAdmin()) {
+            return parent::getEloquentQuery();
         }
 
-        return parent::getEloquentQuery();
+        return parent::getEloquentQuery()->where('user_id', auth()->user()->id);
     }
 
     public static function form(Form $form): Form
@@ -308,11 +311,17 @@ class ReimbursementFormResource extends Resource
 
     public static function canEdit($record): bool
     {
+        if (static::isSuperAdmin()) {
+            return true;
+        }
         return auth()->user()->id === $record->user_id;
     }
 
     public static function canDelete($record): bool
     {
+        if (static::isSuperAdmin()) {
+            return true;
+        }
         return auth()->user()->id === $record->user_id;
     }
 
